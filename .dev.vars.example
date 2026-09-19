@@ -1,0 +1,6 @@
+# Cloudflare Access 校验 (Pages 中间件会读取这些)
+ACCESS_AUD=local-dev-aud
+ACCESS_TEAM_DOMAIN=test.cloudflareaccess.com
+
+# 本地开发跳过 Access 验证 (true 表示伪造当前用户为 admin@example.com)
+DEV_FAKE_USER=admin@example.com

@@ -1,0 +1,23 @@
+{
+  "name": "bug-tracker",
+  "compatibility_date": "2025-01-01",
+  "pages_build_output_dir": "./dist",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "bug-tracker",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "ATTACHMENTS",
+      "bucket_name": "bug-tracker-attachments"
+    }
+  ],
+  "vars": {
+    "ACCESS_AUD": "REPLACE_WITH_ACCESS_APP_AUDIENCE",
+    "ACCESS_TEAM_DOMAIN": "REPLACE_WITH_TEAM_DOMAIN"
+  }
+}
