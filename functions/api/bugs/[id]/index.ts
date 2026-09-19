@@ -62,7 +62,7 @@ export const onRequestGet: PagesFunction<{ DB: D1Database }> = async ({ env, par
 export const onRequestPatch: PagesFunction<{
   DB: D1Database;
   EMAIL?: { send: (m: { from: string; to: string; subject: string; text: string }) => Promise<void> };
-}> = async ({ request, env, params, waitUntil }) => {
+}> = async ({ request, env, params }) => {
   const u = (env as unknown as { _user: { id: number; role: string } })._user!;
   const id = Number(params.id);
   const bug = await env.DB.prepare("SELECT * FROM bugs WHERE id = ?").bind(id).first<Bug>();
@@ -178,7 +178,7 @@ export const onRequestPatch: PagesFunction<{
   return new Response(JSON.stringify({ bug: after }), { headers: { "Content-Type": "application/json" } });
 };
 
-export const onRequestDelete: PagesFunction<{ DB: D1Database }> = async ({ env, params, request, waitUntil }) => {
+export const onRequestDelete: PagesFunction<{ DB: D1Database }> = async ({ env, params, request }) => {
   const u = (env as unknown as { _user: { id: number; role: string } })._user!;
   const id = Number(params.id);
   const url = new URL(request.url);

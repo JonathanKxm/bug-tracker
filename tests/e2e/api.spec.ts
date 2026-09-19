@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 
 const BASE = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:8788";
 
-async function api(path: string, init: RequestInit = {}) {
+async function api(path: string, init: RequestInit = {}): Promise<{ status: number; json: any; text: string }> {
   const res = await fetch(BASE + path, {
     ...init,
     headers: {
@@ -15,7 +15,7 @@ async function api(path: string, init: RequestInit = {}) {
     },
   });
   const text = await res.text();
-  let json: unknown = null;
+  let json: any = null;
   try { json = text ? JSON.parse(text) : null; } catch { /* may be HTML on error pages */ }
   return { status: res.status, json, text };
 }

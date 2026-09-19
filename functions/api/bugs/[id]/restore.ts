@@ -1,6 +1,6 @@
 // functions/api/bugs/[id]/restore.ts
 // POST - admin 恢复被软删除的 bug
-export const onRequestPost: PagesFunction<{ DB: D1Database }> = async ({ request, env, params }) => {
+export const onRequestPost: PagesFunction<{ DB: D1Database }> = async ({ env, params }) => {
   const u = (env as unknown as { _user: { id: number; role: string } })._user!;
   if (u.role !== "admin") return new Response("forbidden", { status: 403 });
   const id = Number(params.id);
