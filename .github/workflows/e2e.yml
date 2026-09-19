@@ -1,0 +1,75 @@
+name: e2e
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  playwright:
+    name: Playwright (desktop + mobile + tablet)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DEV_FAKE_USER: admin@example.com
+      ACCESS_AUD: ci-dev-aud
+      ACCESS_TEAM_DOMAIN: test.cloudflareaccess.com
+      PLAYWRIGHT_BASE_URL: http://127.0.0.1:8788
+      NO_WEB_SERVER: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Apply local D1 migrations
+        run: npx wrangler d1 migrations apply bug-tracker --local
+
+      - name: Seed local DB
+        run: npx wrangler d1 execute bug-tracker --local --file=migrations/0002_seed.sql
+        continue-on-error: true
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Start wrangler pages dev (background)
+        run: |
+          npx wrangler pages dev ./dist --port 8788 \
+            --compatibility-date=2025-01-01 \
+            --persist-to .wrangler/state \
+            > wrangler-dev.log 2>&1 &
+          echo "wrangler pid: $!"
+
+      - name: Wait for server ready
+        run: |
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8788/api/health || echo "000")
+            if [ "$code" = "200" ]; then
+              echo "ready after $i tries"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "server not ready, dump log:"
+          cat wrangler-dev.log
+          exit 1
+
+      - name: Run Playwright tests
+        run: npx playwright test --reporter=list
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

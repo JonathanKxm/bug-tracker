@@ -6,7 +6,7 @@
     {
       "binding": "DB",
       "database_name": "bug-tracker",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "809e32f8-6936-42da-ab8f-7f4e4bd652d8",
       "migrations_dir": "migrations"
     }
   ],
